@@ -7,10 +7,40 @@
     table { width: 100%; border-collapse: collapse; margin-top: 20px; }
     th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
     button { margin: 5px; }
+    select, input { margin: 5px; }
+    .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-top: 20px; }
+    .day { border: 1px solid #ccc; padding: 10px; min-height: 60px; }
+    .day h4 { margin: 0; font-size: 12px; }
+    .status { font-size: 12px; margin-top: 5px; }
+    .present { color: green; font-weight: bold; }
+    .absent { color: red; font-weight: bold; }
+    .late { color: orange; font-weight: bold; }
+    .sunday { background-color: #ffcccc; } /* Sundays red background */
   </style>
 </head>
 <body>
   <h1>Attendance Dashboard</h1>
+
+  <!-- Class selector -->
+  <label for="class-select">Select Class:</label>
+  <select id="class-select" onchange="renderTable(); renderCalendar();">
+    <option value="6A">Class 6A</option>
+    <option value="6B">Class 6B</option>
+    <option value="7A">Class 7A</option>
+    <option value="7B">Class 7B</option>
+    <option value="8A">Class 8A</option>
+    <option value="8B">Class 8B</option>
+    <option value="9A">Class 9A</option>
+    <option value="9B">Class 9B</option>
+    <option value="10A">Class 10A</option>
+    <option value="10B">Class 10B</option>
+    <option value="11A">Class 11A</option>
+    <option value="11B">Class 11B</option>
+    <option value="12A">Class 12A</option>
+    <option value="12B">Class 12B</option>
+  </select>
+
+  <br>
 
   <input type="date" id="date" value="2025-12-19" />
   <input type="text" id="roll" placeholder="Roll No" />
@@ -29,23 +59,35 @@
     <tbody id="student-table"></tbody>
   </table>
 
+  <!-- Monthly Datesheet -->
+  <h2>Monthly Datesheet</h2>
+  <div class="calendar" id="calendar"></div>
+
   <script>
-    let students = [];
+    let classes = {
+      "6A": [], "6B": [], "7A": [], "7B": [],
+      "8A": [], "8B": [], "9A": [], "9B": [],
+      "10A": [], "10B": [], "11A": [], "11B": [],
+      "12A": [], "12B": []
+    };
+
+    let attendanceRecords = {};
 
     function renderTable() {
+      const selectedClass = document.getElementById('class-select').value;
       const table = document.getElementById('student-table');
       table.innerHTML = '';
-      students.forEach((s, i) => {
+      classes[selectedClass].forEach((s, i) => {
         const row = document.createElement('tr');
         row.innerHTML = `
           <td>${s.roll}</td>
           <td>${s.name}</td>
           <td>
-            <button onclick="setStatus(${i}, 'present')">✓</button>
-            <button onclick="setStatus(${i}, 'absent')">✗</button>
-            <button onclick="setStatus(${i}, 'late')">🕒</button>
+            <button onclick="setStatus('${selectedClass}', ${i}, 'present')">✓</button>
+            <button onclick="setStatus('${selectedClass}', ${i}, 'absent')">✗</button>
+            <button onclick="setStatus('${selectedClass}', ${i}, 'late')">🕒</button>
           </td>
-          <td><button onclick="removeStudent(${i})">🗑️</button></td>
+          <td><button onclick="removeStudent('${selectedClass}', ${i})">🗑️</button></td>
         `;
         table.appendChild(row);
       });
@@ -54,29 +96,79 @@
     function addStudent() {
       const roll = document.getElementById('roll').value;
       const name = document.getElementById('name').value;
+      const selectedClass = document.getElementById('class-select').value;
       if (roll && name) {
-        students.push({ roll, name, status: null });
+        classes[selectedClass].push({ roll, name, status: null });
         renderTable();
         document.getElementById('roll').value = '';
         document.getElementById('name').value = '';
       }
     }
 
-    function removeStudent(index) {
-      students.splice(index, 1);
+    function removeStudent(className, index) {
+      classes[className].splice(index, 1);
       renderTable();
     }
 
-    function setStatus(index, status) {
-      students[index].status = status;
-      alert(`${students[index].name} marked as ${status}`);
+    function setStatus(className, index, status) {
+      const date = document.getElementById('date').value;
+      classes[className][index].status = status;
+
+      if (!attendanceRecords[className]) attendanceRecords[className] = {};
+      if (!attendanceRecords[className][date]) attendanceRecords[className][date] = [];
+      attendanceRecords[className][date].push({ roll: classes[className][index].roll, name: classes[className][index].name, status });
+
+      alert(`${classes[className][index].name} marked as ${status} on ${date}`);
+      renderCalendar();
     }
 
     document.getElementById('date').addEventListener('change', (e) => {
       document.getElementById('date-label').textContent = e.target.value;
     });
 
+    function renderCalendar() {
+      const selectedClass = document.getElementById('class-select').value;
+      const calendar = document.getElementById('calendar');
+      calendar.innerHTML = '';
+
+      const today = new Date(document.getElementById('date').value);
+      const year = today.getFullYear();
+      const month = today.getMonth();
+
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      for (let i = 0; i < firstDay; i++) {
+        const empty = document.createElement('div');
+        empty.className = 'day';
+        calendar.appendChild(empty);
+      }
+
+      for (let d = 1; d <= daysInMonth; d++) {
+        const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const dayBox = document.createElement('div');
+        const dayOfWeek = new Date(year, month, d).getDay();
+        dayBox.className = 'day';
+        if (dayOfWeek === 0) { // Sunday
+          dayBox.classList.add('sunday');
+        }
+        dayBox.innerHTML = `<h4>${d}</h4>`;
+
+        if (attendanceRecords[selectedClass] && attendanceRecords[selectedClass][dateStr]) {
+          attendanceRecords[selectedClass][dateStr].forEach(r => {
+            const status = document.createElement('div');
+            status.className = 'status ' + r.status;
+            status.textContent = `${r.name}: ${r.status}`;
+            dayBox.appendChild(status);
+          });
+        }
+
+        calendar.appendChild(dayBox);
+      }
+    }
+
     renderTable();
+    renderCalendar();
   </script>
 </body>
 </html>
