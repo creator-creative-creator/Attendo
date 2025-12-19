@@ -1,52 +1,116 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Attendance with Classes</title>
+  <title>Attendance Dashboard</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
-    button { margin: 5px; padding: 5px 10px; }
-    select, input { margin: 5px; padding: 5px; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f4ff;
+      padding: 20px;
+      margin: 0;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    label {
+      font-weight: bold;
+      margin-right: 10px;
+    }
+
+    select, input, button {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      margin: 5px;
+    }
+
+    button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th {
+      background-color: #3498db;
+      color: white;
+      padding: 10px;
+    }
+
+    td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
   </style>
 </head>
 <body>
-  <h1>Attendance Dashboard</h1>
+  <div class="container">
+    <h1>Attendance Dashboard</h1>
 
-  <!-- Class selector -->
-  <label for="class-select">Select Class:</label>
-  <select id="class-select" onchange="renderTable()">
-    <option value="6A">Class 6A</option>
-    <option value="6B">Class 6B</option>
-    <option value="7A">Class 7A</option>
-    <option value="7B">Class 7B</option>
-    <option value="8A">Class 8A</option>
-    <option value="8B">Class 8B</option>
-    <option value="9A">Class 9A</option>
-    <option value="9B">Class 9B</option>
-    <option value="10A">Class 10A</option>
-    <option value="10B">Class 10B</option>
-    <option value="11A">Class 11A</option>
-    <option value="11B">Class 11B</option>
-    <option value="12A">Class 12A</option>
-    <option value="12B">Class 12B</option>
-  </select>
+    <!-- Class selector -->
+    <label for="class-select">Select Class:</label>
+    <select id="class-select" onchange="renderTable()">
+      <option value="6A">Class 6A</option>
+      <option value="6B">Class 6B</option>
+      <option value="7A">Class 7A</option>
+      <option value="7B">Class 7B</option>
+      <option value="8A">Class 8A</option>
+      <option value="8B">Class 8B</option>
+      <option value="9A">Class 9A</option>
+      <option value="9B">Class 9B</option>
+      <option value="10A">Class 10A</option>
+      <option value="10B">Class 10B</option>
+      <option value="11A">Class 11A</option>
+      <option value="11B">Class 11B</option>
+      <option value="12A">Class 12A</option>
+      <option value="12B">Class 12B</option>
+    </select>
 
-  <br><br>
+    <br><br>
 
-  <input type="text" id="roll" placeholder="Roll No" />
-  <input type="text" id="name" placeholder="Student Name" />
-  <button onclick="addStudent()">+ Add Student</button>
+    <input type="text" id="roll" placeholder="Roll No" />
+    <input type="text" id="name" placeholder="Student Name" />
+    <button onclick="addStudent()">+ Add Student</button>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Roll No</th>
-        <th>Name</th>
-      </tr>
-    </thead>
-    <tbody id="student-table"></tbody>
-  </table>
+    <table>
+      <thead>
+        <tr>
+          <th>Roll No</th>
+          <th>Name</th>
+        </tr>
+      </thead>
+      <tbody id="student-table"></tbody>
+    </table>
+  </div>
 
   <script>
     // Separate student lists for each class
