@@ -230,14 +230,17 @@
     }
 
     function addStudent() {
-      const roll = document.getElementById('roll').value;
-      const name = document.getElementById('name').value;
+      const roll = document.getElementById('roll').value.trim();
+      const name = document.getElementById('name').value.trim();
       const selectedClass = document.getElementById('class-select').value;
-      if (roll && name) {
+
+      if (roll !== "" && name !== "") {
         classes[selectedClass].push({ roll, name, status: null });
         renderTable();
         document.getElementById('roll').value = '';
         document.getElementById('name').value = '';
+      } else {
+        alert("Please enter both Roll No and Student Name!");
       }
     }
 
@@ -264,5 +267,4 @@
     });
 
     function renderCalendar() {
-      const selectedClass = document.getElementById('class-select').value;
-      const calendar = document.getElement
+      const selectedClass =
