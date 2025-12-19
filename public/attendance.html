@@ -1,230 +1,40 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Attendance Dashboard</title>
+  <title>Simple Attendance</title>
   <style>
-    body {
-      font-family: "Segoe UI", Arial, sans-serif;
-      background: linear-gradient(to right, #f0f4ff, #e8faff);
-      margin: 0;
-      padding: 20px;
-      color: #333;
-    }
-
-    h1, h2 {
-      text-align: center;
-      color: #2c3e50;
-    }
-
-    .container {
-      max-width: 1000px;
-      margin: auto;
-      background: #fff;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-
-    label {
-      font-weight: bold;
-      margin-right: 10px;
-    }
-
-    select, input, button {
-      padding: 8px 12px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 14px;
-    }
-
-    button {
-      background-color: #3498db;
-      color: white;
-      border: none;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    button:hover {
-      background-color: #2980b9;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-
-    th {
-      background-color: #3498db;
-      color: white;
-      padding: 10px;
-    }
-
-    td {
-      border: 1px solid #ddd;
-      padding: 8px;
-    }
-
-    tr:nth-child(even) {
-      background-color: #f9f9f9;
-    }
-
-    .calendar {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 8px;
-      margin-top: 20px;
-    }
-
-    .day {
-      border: 1px solid #ddd;
-      background-color: #fdfdfd;
-      padding: 10px;
-      min-height: 80px;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-      transition: transform 0.2s;
-    }
-
-    .day:hover {
-      transform: scale(1.05);
-    }
-
-    .day h4 {
-      margin: 0;
-      font-size: 14px;
-      color: #2c3e50;
-    }
-
-    .status {
-      font-size: 12px;
-      margin-top: 5px;
-      padding: 2px 6px;
-      border-radius: 4px;
-      display: inline-block;
-    }
-
-    .present {
-      background-color: #2ecc71;
-      color: white;
-    }
-
-    .absent {
-      background-color: #e74c3c;
-      color: white;
-    }
-
-    .late {
-      background-color: #f39c12;
-      color: white;
-    }
-
-    .sunday {
-      background-color: #ffcccc !important;
-    }
-
-    .legend {
-      margin-top: 15px;
-      text-align: center;
-    }
-
-    .legend span {
-      margin-right: 15px;
-      font-size: 14px;
-      padding: 4px 8px;
-      border-radius: 4px;
-    }
-
-    .legend .present { background-color: #2ecc71; color: white; }
-    .legend .absent { background-color: #e74c3c; color: white; }
-    .legend .late { background-color: #f39c12; color: white; }
-    .legend .sunday { background-color: #ffcccc; color: #333; }
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    button { margin: 5px; padding: 5px 10px; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Attendance Dashboard</h1>
+  <h1>Simple Attendance</h1>
 
-    <!-- Class selector -->
-    <label for="class-select">Select Class:</label>
-    <select id="class-select" onchange="renderTable(); renderCalendar();">
-      <option value="6A">Class 6A</option>
-      <option value="6B">Class 6B</option>
-      <option value="7A">Class 7A</option>
-      <option value="7B">Class 7B</option>
-      <option value="8A">Class 8A</option>
-      <option value="8B">Class 8B</option>
-      <option value="9A">Class 9A</option>
-      <option value="9B">Class 9B</option>
-      <option value="10A">Class 10A</option>
-      <option value="10B">Class 10B</option>
-      <option value="11A">Class 11A</option>
-      <option value="11B">Class 11B</option>
-      <option value="12A">Class 12A</option>
-      <option value="12B">Class 12B</option>
-    </select>
+  <input type="text" id="roll" placeholder="Roll No" />
+  <input type="text" id="name" placeholder="Student Name" />
+  <button onclick="addStudent()">+ Add Student</button>
 
-    <br><br>
-
-    <input type="date" id="date" value="2025-12-19" />
-    <input type="text" id="roll" placeholder="Roll No" />
-    <input type="text" id="name" placeholder="Student Name" />
-    <button onclick="addStudent()">+ Add Student</button>
-
-    <table>
-      <thead>
-        <tr>
-          <th>Roll No</th>
-          <th>Student Name</th>
-          <th>Status (<span id="date-label">2025-12-19</span>)</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody id="student-table"></tbody>
-    </table>
-
-    <!-- Legend -->
-    <div class="legend">
-      <span class="present">Present</span>
-      <span class="absent">Absent</span>
-      <span class="late">Late</span>
-      <span class="sunday">Sunday</span>
-    </div>
-
-    <!-- Monthly Datesheet -->
-    <h2>Monthly Datesheet</h2>
-    <div class="calendar" id="calendar"></div>
-  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Roll No</th>
+        <th>Name</th>
+      </tr>
+    </thead>
+    <tbody id="student-table"></tbody>
+  </table>
 
   <script>
-    let classes = {
-      "6A": [], "6B": [], "7A": [], "7B": [],
-      "8A": [], "8B": [], "9A": [], "9B": [],
-      "10A": [], "10B": [], "11A": [], "11B": [],
-      "12A": [], "12B": []
-    };
-
-    let attendanceRecords = {};
+    let students = [];
 
     function renderTable() {
-      const selectedClass = document.getElementById('class-select').value;
       const table = document.getElementById('student-table');
       table.innerHTML = '';
-      classes[selectedClass].forEach((s, i) => {
+      students.forEach(s => {
         const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${s.roll}</td>
-          <td>${s.name}</td>
-          <td>
-            <button onclick="setStatus('${selectedClass}', ${i}, 'present')">✓</button>
-            <button onclick="setStatus('${selectedClass}', ${i}, 'absent')">✗</button>
-            <button onclick="setStatus('${selectedClass}', ${i}, 'late')">🕒</button>
-          </td>
-          <td><button onclick="removeStudent('${selectedClass}', ${i})">🗑️</button></td>
-        `;
+        row.innerHTML = `<td>${s.roll}</td><td>${s.name}</td>`;
         table.appendChild(row);
       });
     }
@@ -232,39 +42,15 @@
     function addStudent() {
       const roll = document.getElementById('roll').value.trim();
       const name = document.getElementById('name').value.trim();
-      const selectedClass = document.getElementById('class-select').value;
-
-      if (roll !== "" && name !== "") {
-        classes[selectedClass].push({ roll, name, status: null });
+      if (roll && name) {
+        students.push({ roll, name });
         renderTable();
         document.getElementById('roll').value = '';
         document.getElementById('name').value = '';
       } else {
-        alert("Please enter both Roll No and Student Name!");
+        alert("Please enter both Roll No and Name!");
       }
     }
-
-    function removeStudent(className, index) {
-      classes[className].splice(index, 1);
-      renderTable();
-    }
-
-    function setStatus(className, index, status) {
-      const date = document.getElementById('date').value;
-      classes[className][index].status = status;
-
-      if (!attendanceRecords[className]) attendanceRecords[className] = {};
-      if (!attendanceRecords[className][date]) attendanceRecords[className][date] = [];
-      attendanceRecords[className][date].push({ roll: classes[className][index].roll, name: classes[className][index].name, status });
-
-      alert(`${classes[className][index].name} marked as ${status} on ${date}`);
-      renderCalendar();
-    }
-
-    document.getElementById('date').addEventListener('change', (e) => {
-      document.getElementById('date-label').textContent = e.target.value;
-      renderCalendar();
-    });
-
-    function renderCalendar() {
-      const selectedClass =
+  </script>
+</body>
+</html>
