@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Attendance Dashboard</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    button { margin: 5px; }
+  </style>
+</head>
+<body>
+  <h1>Attendance Dashboard</h1>
+
+  <input type="date" id="date" value="2025-12-19" />
+  <input type="text" id="roll" placeholder="Roll No" />
+  <input type="text" id="name" placeholder="Student Name" />
+  <button onclick="addStudent()">+ Add Student</button>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Roll No</th>
+        <th>Student Name</th>
+        <th>Status (<span id="date-label">2025-12-19</span>)</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="student-table"></tbody>
+  </table>
+
+  <script>
+    let students = [];
+
+    function renderTable() {
+      const table = document.getElementById('student-table');
+      table.innerHTML = '';
+      students.forEach((s, i) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${s.roll}</td>
+          <td>${s.name}</td>
+          <td>
+            <button onclick="setStatus(${i}, 'present')">✓</button>
+            <button onclick="setStatus(${i}, 'absent')">✗</button>
+            <button onclick="setStatus(${i}, 'late')">🕒</button>
+          </td>
+          <td><button onclick="removeStudent(${i})">🗑️</button></td>
+        `;
+        table.appendChild(row);
+      });
+    }
+
+    function addStudent() {
+      const roll = document.getElementById('roll').value;
+      const name = document.getElementById('name').value;
+      if (roll && name) {
+        students.push({ roll, name, status: null });
+        renderTable();
+        document.getElementById('roll').value = '';
+        document.getElementById('name').value = '';
+      }
+    }
+
+    function removeStudent(index) {
+      students.splice(index, 1);
+      renderTable();
+    }
+
+    function setStatus(index, status) {
+      students[index].status = status;
+      alert(`${students[index].name} marked as ${status}`);
+    }
+
+    document.getElementById('date').addEventListener('change', (e) => {
+      document.getElementById('date-label').textContent = e.target.value;
+    });
+
+    renderTable();
+  </script>
+</body>
+</html>
