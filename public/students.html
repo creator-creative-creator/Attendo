@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Student Manager</title>
+</head>
+<body>
+  <h1>Student List</h1>
+  <ul id="student-list"></ul>
+
+  <h2>Add Student</h2>
+  <input type="text" id="student-name" placeholder="Enter name" />
+  <button onclick="addStudent()">Add</button>
+
+  <h2>Remove Student</h2>
+  <input type="number" id="student-id" placeholder="Enter ID to remove" />
+  <button onclick="removeStudent()">Remove</button>
+
+  <script>
+    async function loadStudents() {
+      const res = await fetch('/api/students');
+      const students = await res.json();
+      const list = document.getElementById('student-list');
+      list.innerHTML = '';
+      students.forEach(s => {
+        const item = document.createElement('li');
+        item.textContent = `ID: ${s.id} — Name: ${s.name}`;
+        list.appendChild(item);
+      });
+    }
+
+    async function addStudent() {
+      const name = document.getElementById('student-name').value;
+      await fetch('/api/students', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name })
+      });
+      loadStudents();
+    }
+
+    async function removeStudent() {
+      const id = parseInt(document.getElementById('student-id').value);
+      await fetch('/api/students', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      });
+      loadStudents();
+    }
+
+    loadStudents();
+  </script>
+</body>
+</html>
