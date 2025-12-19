@@ -3,65 +3,201 @@
 <head>
   <title>Attendance Dashboard</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
-    button { margin: 5px; }
-    select, input { margin: 5px; }
-    .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-top: 20px; }
-    .day { border: 1px solid #ccc; padding: 10px; min-height: 60px; }
-    .day h4 { margin: 0; font-size: 12px; }
-    .status { font-size: 12px; margin-top: 5px; }
-    .present { color: green; font-weight: bold; }
-    .absent { color: red; font-weight: bold; }
-    .late { color: orange; font-weight: bold; }
-    .sunday { background-color: #ffcccc; } /* Sundays red background */
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(to right, #f0f4ff, #e8faff);
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+
+    h1, h2 {
+      text-align: center;
+      color: #2c3e50;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    label {
+      font-weight: bold;
+      margin-right: 10px;
+    }
+
+    select, input, button {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th {
+      background-color: #3498db;
+      color: white;
+      padding: 10px;
+    }
+
+    td {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .day {
+      border: 1px solid #ddd;
+      background-color: #fdfdfd;
+      padding: 10px;
+      min-height: 80px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      transition: transform 0.2s;
+    }
+
+    .day:hover {
+      transform: scale(1.05);
+    }
+
+    .day h4 {
+      margin: 0;
+      font-size: 14px;
+      color: #2c3e50;
+    }
+
+    .status {
+      font-size: 12px;
+      margin-top: 5px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    .present {
+      background-color: #2ecc71;
+      color: white;
+    }
+
+    .absent {
+      background-color: #e74c3c;
+      color: white;
+    }
+
+    .late {
+      background-color: #f39c12;
+      color: white;
+    }
+
+    .sunday {
+      background-color: #ffcccc !important;
+    }
+
+    .legend {
+      margin-top: 15px;
+      text-align: center;
+    }
+
+    .legend span {
+      margin-right: 15px;
+      font-size: 14px;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+
+    .legend .present { background-color: #2ecc71; color: white; }
+    .legend .absent { background-color: #e74c3c; color: white; }
+    .legend .late { background-color: #f39c12; color: white; }
+    .legend .sunday { background-color: #ffcccc; color: #333; }
   </style>
 </head>
 <body>
-  <h1>Attendance Dashboard</h1>
+  <div class="container">
+    <h1>Attendance Dashboard</h1>
 
-  <!-- Class selector -->
-  <label for="class-select">Select Class:</label>
-  <select id="class-select" onchange="renderTable(); renderCalendar();">
-    <option value="6A">Class 6A</option>
-    <option value="6B">Class 6B</option>
-    <option value="7A">Class 7A</option>
-    <option value="7B">Class 7B</option>
-    <option value="8A">Class 8A</option>
-    <option value="8B">Class 8B</option>
-    <option value="9A">Class 9A</option>
-    <option value="9B">Class 9B</option>
-    <option value="10A">Class 10A</option>
-    <option value="10B">Class 10B</option>
-    <option value="11A">Class 11A</option>
-    <option value="11B">Class 11B</option>
-    <option value="12A">Class 12A</option>
-    <option value="12B">Class 12B</option>
-  </select>
+    <!-- Class selector -->
+    <label for="class-select">Select Class:</label>
+    <select id="class-select" onchange="renderTable(); renderCalendar();">
+      <option value="6A">Class 6A</option>
+      <option value="6B">Class 6B</option>
+      <option value="7A">Class 7A</option>
+      <option value="7B">Class 7B</option>
+      <option value="8A">Class 8A</option>
+      <option value="8B">Class 8B</option>
+      <option value="9A">Class 9A</option>
+      <option value="9B">Class 9B</option>
+      <option value="10A">Class 10A</option>
+      <option value="10B">Class 10B</option>
+      <option value="11A">Class 11A</option>
+      <option value="11B">Class 11B</option>
+      <option value="12A">Class 12A</option>
+      <option value="12B">Class 12B</option>
+    </select>
 
-  <br>
+    <br><br>
 
-  <input type="date" id="date" value="2025-12-19" />
-  <input type="text" id="roll" placeholder="Roll No" />
-  <input type="text" id="name" placeholder="Student Name" />
-  <button onclick="addStudent()">+ Add Student</button>
+    <input type="date" id="date" value="2025-12-19" />
+    <input type="text" id="roll" placeholder="Roll No" />
+    <input type="text" id="name" placeholder="Student Name" />
+    <button onclick="addStudent()">+ Add Student</button>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Roll No</th>
-        <th>Student Name</th>
-        <th>Status (<span id="date-label">2025-12-19</span>)</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody id="student-table"></tbody>
-  </table>
+    <table>
+      <thead>
+        <tr>
+          <th>Roll No</th>
+          <th>Student Name</th>
+          <th>Status (<span id="date-label">2025-12-19</span>)</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="student-table"></tbody>
+    </table>
 
-  <!-- Monthly Datesheet -->
-  <h2>Monthly Datesheet</h2>
-  <div class="calendar" id="calendar"></div>
+    <!-- Legend -->
+    <div class="legend">
+      <span class="present">Present</span>
+      <span class="absent">Absent</span>
+      <span class="late">Late</span>
+      <span class="sunday">Sunday</span>
+    </div>
+
+    <!-- Monthly Datesheet -->
+    <h2>Monthly Datesheet</h2>
+    <div class="calendar" id="calendar"></div>
+  </div>
 
   <script>
     let classes = {
@@ -124,51 +260,9 @@
 
     document.getElementById('date').addEventListener('change', (e) => {
       document.getElementById('date-label').textContent = e.target.value;
+      renderCalendar();
     });
 
     function renderCalendar() {
       const selectedClass = document.getElementById('class-select').value;
-      const calendar = document.getElementById('calendar');
-      calendar.innerHTML = '';
-
-      const today = new Date(document.getElementById('date').value);
-      const year = today.getFullYear();
-      const month = today.getMonth();
-
-      const firstDay = new Date(year, month, 1).getDay();
-      const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-      for (let i = 0; i < firstDay; i++) {
-        const empty = document.createElement('div');
-        empty.className = 'day';
-        calendar.appendChild(empty);
-      }
-
-      for (let d = 1; d <= daysInMonth; d++) {
-        const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-        const dayBox = document.createElement('div');
-        const dayOfWeek = new Date(year, month, d).getDay();
-        dayBox.className = 'day';
-        if (dayOfWeek === 0) { // Sunday
-          dayBox.classList.add('sunday');
-        }
-        dayBox.innerHTML = `<h4>${d}</h4>`;
-
-        if (attendanceRecords[selectedClass] && attendanceRecords[selectedClass][dateStr]) {
-          attendanceRecords[selectedClass][dateStr].forEach(r => {
-            const status = document.createElement('div');
-            status.className = 'status ' + r.status;
-            status.textContent = `${r.name}: ${r.status}`;
-            dayBox.appendChild(status);
-          });
-        }
-
-        calendar.appendChild(dayBox);
-      }
-    }
-
-    renderTable();
-    renderCalendar();
-  </script>
-</body>
-</html>
+      const calendar = document.getElement
