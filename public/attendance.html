@@ -49,6 +49,16 @@
       background-color: #2980b9;
     }
 
+    .btn-delete {
+      background-color: #e74c3c;
+      padding: 5px 10px;
+      font-size: 12px;
+    }
+
+    .btn-delete:hover {
+      background-color: #c0392b;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -70,13 +80,19 @@
     tr:nth-child(even) {
       background-color: #f9f9f9;
     }
+
+    .status-msg {
+      font-size: 12px;
+      color: #7f8c8d;
+      text-align: center;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Attendance Dashboard</h1>
 
-    <!-- Class selector -->
     <label for="class-select">Select Class:</label>
     <select id="class-select" onchange="renderTable()">
       <option value="6A">Class 6A</option>
@@ -106,14 +122,15 @@
         <tr>
           <th>Roll No</th>
           <th>Name</th>
+          <th>Action</th>
         </tr>
       </thead>
       <tbody id="student-table"></tbody>
     </table>
+    <div id="status" class="status-msg">Connecting to database...</div>
   </div>
 
   <script>
-    // Separate student lists for each class
     let classes = {
       "6A": [], "6B": [], "7A": [], "7B": [],
       "8A": [], "8B": [], "9A": [], "9B": [],
@@ -121,18 +138,61 @@
       "12A": [], "12B": []
     };
 
+    // --- Database Functions ---
+
+    // Load data from Vercel KV via our API
+    async function loadData() {
+      const status = document.getElementById('status');
+      try {
+        const response = await fetch('/api/attendance');
+        const data = await response.json();
+        if (data && Object.keys(data).length > 0) {
+          classes = data;
+        }
+        status.innerText = "Data synced with cloud.";
+        renderTable();
+      } catch (err) {
+        status.innerText = "Error loading cloud data.";
+        console.error(err);
+      }
+    }
+
+    // Save current 'classes' object to Vercel KV
+    async function saveToCloud() {
+      const status = document.getElementById('status');
+      status.innerText = "Saving...";
+      try {
+        await fetch('/api/attendance', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(classes)
+        });
+        status.innerText = "All changes saved.";
+      } catch (err) {
+        status.innerText = "Save failed.";
+        console.error(err);
+      }
+    }
+
+    // --- UI Functions ---
+
     function renderTable() {
       const selectedClass = document.getElementById('class-select').value;
       const table = document.getElementById('student-table');
       table.innerHTML = '';
-      classes[selectedClass].forEach(s => {
+      
+      classes[selectedClass].forEach((s, index) => {
         const row = document.createElement('tr');
-        row.innerHTML = `<td>${s.roll}</td><td>${s.name}</td>`;
+        row.innerHTML = `
+          <td>${s.roll}</td>
+          <td>${s.name}</td>
+          <td><button class="btn-delete" onclick="deleteStudent(${index})">Delete</button></td>
+        `;
         table.appendChild(row);
       });
     }
 
-    function addStudent() {
+    async function addStudent() {
       const roll = document.getElementById('roll').value.trim();
       const name = document.getElementById('name').value.trim();
       const selectedClass = document.getElementById('class-select').value;
@@ -142,13 +202,23 @@
         renderTable();
         document.getElementById('roll').value = '';
         document.getElementById('name').value = '';
+        await saveToCloud();
       } else {
         alert("Please enter both Roll No and Name!");
       }
     }
 
-    // Initial render
-    renderTable();
+    async function deleteStudent(index) {
+      const selectedClass = document.getElementById('class-select').value;
+      if (confirm("Are you sure you want to delete this student?")) {
+        classes[selectedClass].splice(index, 1);
+        renderTable();
+        await saveToCloud();
+      }
+    }
+
+    // Initial Load
+    loadData();
   </script>
 </body>
 </html>
